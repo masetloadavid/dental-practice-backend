@@ -1,5 +1,5 @@
 // =============================================================================
-// server.js — SmileCare Dental Practice Backend
+// server.js — Love2Smile Dental Suites Practice Backend
 // =============================================================================
 // Entry point for the Express API server.
 //
@@ -89,10 +89,10 @@ app.get('/', (req, res) => {
 });
 
 // ── API ROUTES ────────────────────────────────────────────────────────────────
-app.use('/api/patients',     require('./routes/patients'));
-app.use('/api/appointments', require('./routes/appointments'));
-app.use('/api/reminders',    require('./routes/reminders'));
-app.use('/api/analytics',    require('./routes/analytics'));
+app.use('/api/patients', require('./patients'));
+app.use('/api/appointments', require('./appointments'));
+app.use('/api/reminders', require('./reminders'));
+app.use('/api/analytics', require('./analytics'));
 
 // ── 404 HANDLER ───────────────────────────────────────────────────────────────
 app.use((req, res) => {
