@@ -4,7 +4,7 @@
 
 const express = require('express');
 const router  = express.Router();
-const { pool } = require('../db');
+const { pool } = require('./db');
 
 // ── GET /api/analytics ────────────────────────────────────────────────────────
 // Returns all key metrics in a single request so the dashboard
