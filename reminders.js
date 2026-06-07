@@ -4,14 +4,14 @@
 
 const express = require('express');
 const router  = express.Router();
-const { pool } = require('../db');
+const { pool } = require('./db');
 const {
   sendWhatsAppMessage,
   buildRecallMessage,
   buildOneWeekMessage,
   buildOneDayMessage,
   buildDayOfMessage,
-} = require('../whatsapp');
+} = require('./whatsapp');
 
 // ── GET /api/reminders ────────────────────────────────────────────────────────
 // Returns all reminder records, optionally filtered.
