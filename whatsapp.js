@@ -89,7 +89,7 @@ async function sendWhatsAppMessage(to, message) {
    try {
      await client.messages.create({
        from: process.env.TWILIO_WHATSAPP_NUMBER,  // e.g. "whatsapp:+14155238886"
-       to:   `whatsapp:${to}`,
+       to: `whatsapp:${to.replace(/\s/g, "").startsWith("+") ? to.replace(/\s/g, "") : "+27" + to.replace(/\s/g, "").substring(1)}`,
        body: message,
      });
      return { success: true, provider: 'twilio' };
