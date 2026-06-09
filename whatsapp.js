@@ -87,11 +87,15 @@ async function sendWhatsAppMessage(to, message) {
      process.env.TWILIO_AUTH_TOKEN
    );
    try {
-     await client.messages.create({
-       from: process.env.TWILIO_WHATSAPP_NUMBER,  // e.g. "whatsapp:+14155238886"
-       to: `whatsapp:${to.replace(/\s/g, "").startsWith("+") ? to.replace(/\s/g, "") : "+27" + to.replace(/\s/g, "").substring(1)}`,
-       body: message,
-     });
+     console.log("SENDING TO:", `whatsapp:${to}`);
+
+const result = await client.messages.create({
+  from: process.env.TWILIO_WHATSAPP_NUMBER,
+  to: `whatsapp:${to}`,
+  body: message,
+});
+
+console.log("TWILIO RESULT:", result.sid);
      return { success: true, provider: 'twilio' };
    } catch (err) {
      console.error('[Twilio Error]', err.message);
