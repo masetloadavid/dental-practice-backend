@@ -6,8 +6,8 @@
 // to switch to Twilio or Infobip — it is a one-line change per provider.
 // =============================================================================
 
-const PRACTICE_NAME  = 'SmileCare Dental Practice';
-const PRACTICE_PHONE = process.env.PRACTICE_PHONE || '+27 11 000 0000';
+const PRACTICE_NAME = process.env.PRACTICE_NAME || 'Love2Smile Dental Suites';
+const PRACTICE_PHONE = process.env.PRACTICE_PHONE || '081 740 9291 / 061 614 5079';
 
 // ── MESSAGE TEMPLATES ─────────────────────────────────────────────────────────
 // Each function returns the WhatsApp message string for that reminder type.
