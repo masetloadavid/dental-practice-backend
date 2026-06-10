@@ -73,6 +73,25 @@ app.get('/health', (req, res) => {
   });
 });
 
+app.get('/api/reminders/run', async (req, res) => {
+  try {
+    console.log('Running reminders...');
+
+    res.status(200).json({
+      success: true,
+      message: 'Reminders endpoint working'
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // ── ROOT ──────────────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({
