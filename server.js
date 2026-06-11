@@ -113,7 +113,7 @@ async function start() {
   // Run schema.sql to create tables if they don't exist yet
   await initSchema();
 
-  app.listen(PORT, () => {
+  app.listen(PORT, '0.0.0.0', () => {
     console.log('═══════════════════════════════════════════');
     console.log(' SmileCare Dental Backend is running!');
     console.log(`  Local:  http://localhost:${PORT}`);
