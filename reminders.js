@@ -65,6 +65,7 @@ router.get('/', async (req, res) => {
 //
 // Returns: a summary of what was sent
 router.post('/run', async (req, res) => {
+  console.log('REAL REMINDER ROUTE STARTED');
   const today     = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
   const results   = { sent: [], skipped: [], errors: [] };
 
@@ -91,6 +92,8 @@ router.post('/run', async (req, res) => {
          AND r.reminder_type != 'six_month_recall'`,
       [today]
     );
+
+    console.log('DUE REMINDERS FOUND:', dueReminders.rows.length);
 
     for (const reminder of dueReminders.rows) {
       // Skip if patient has not opted in
