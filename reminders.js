@@ -65,7 +65,7 @@ router.get('/', async (req, res) => {
 //
 // Returns: a summary of what was sent
 router.post('/run', async (req, res) => {
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     message: 'Reminder job started'
   });
