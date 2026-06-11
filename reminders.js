@@ -65,6 +65,11 @@ router.get('/', async (req, res) => {
 //
 // Returns: a summary of what was sent
 router.post('/run', async (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Reminder job started'
+  });
+
   console.log('REAL REMINDER ROUTE STARTED');
   const today     = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
   const results   = { sent: [], skipped: [], errors: [] };
@@ -221,15 +226,15 @@ router.post('/run', async (req, res) => {
     }
 
     // Return a summary
-    res.json({
-      date:          today,
-      total_sent:    results.sent.length,
-      total_skipped: results.skipped.length,
-      total_errors:  results.errors.length,
-      sent:          results.sent,
-      skipped:       results.skipped,
-      errors:        results.errors,
-    });
+    // res.json({
+    //  date:          today,
+    //  total_sent:    results.sent.length,
+    //  total_skipped: results.skipped.length,
+    //  total_errors:  results.errors.length,
+    //  sent:          results.sent,
+    //  skipped:       results.skipped,
+    //  errors:        results.errors,
+   // });
 
   } catch (err) {
     console.error('POST /api/reminders/run error:', err.message);
