@@ -144,6 +144,7 @@ router.post('/run', async (req, res) => {
       }
 
       // Send the WhatsApp message
+      console.log('ABOUT TO SEND WHATSAPP TO:', reminder.phone);
       const sendResult = await sendWhatsAppMessage(reminder.phone, message);
 
       if (sendResult.success) {
@@ -204,6 +205,7 @@ router.post('/run', async (req, res) => {
       if (alreadySent.rows.length > 0) continue;
 
       const message      = buildRecallMessage(patient.full_name);
+      console.log('ABOUT TO SEND WHATSAPP TO:', reminder.phone);
       const sendResult   = await sendWhatsAppMessage(patient.phone, message);
 
       if (sendResult.success) {
@@ -237,9 +239,14 @@ router.post('/run', async (req, res) => {
    // });
 
   } catch (err) {
-    console.error('POST /api/reminders/run error:', err.message);
-    res.status(500).json({ error: 'Reminder engine failed.', detail: err.message });
-  }
+  console.error('REMINDER ERROR:', err);
+  console.error('MESSAGE:', err.message);
+  console.error('STACK:', err.stack);
+
+  return res.status(500).json({
+    error: err.message
+  });
+}
 });
 
 module.exports = router;
