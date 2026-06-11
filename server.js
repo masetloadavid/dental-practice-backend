@@ -113,12 +113,7 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3001;
 
 async function start() {
-  try {
-    await initSchema();
-    console.log('Schema initialized');
-  } catch (err) {
-    console.error('Schema init failed:', err.message);
-  }
+  console.log('Starting server without schema check');
 
   app.listen(PORT, '0.0.0.0', () => {
   console.log('=================================');
