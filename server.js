@@ -127,11 +127,6 @@ async function start() {
   console.log(`Health: http://localhost:${PORT}/health`);
   console.log('=================================');
 });
+}
 
-initSchema()
-  .then(() => {
-    console.log('✅ Database schema is up to date.');
-  })
-  .catch((err) => {
-    console.error('❌ Database schema error:', err.message);
-  });
+start();
