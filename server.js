@@ -109,17 +109,18 @@ app.use((err, req, res, next) => {
 // Railway injects PORT automatically. We fall back to 3001 for local dev.
 const PORT = process.env.PORT || 3001;
 
-async function start() {
-  // Run schema.sql to create tables if they don't exist yet
-  await initSchema();
+app.listen(PORT, '0.0.0.0', () => {
+  console.log('=================================');
+  console.log('SmileCare Dental Backend is running!');
+  console.log(`Local: http://localhost:${PORT}`);
+  console.log(`Health: http://localhost:${PORT}/health`);
+  console.log('=================================');
+});
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log('═══════════════════════════════════════════');
-    console.log(' SmileCare Dental Backend is running!');
-    console.log(`  Local:  http://localhost:${PORT}`);
-    console.log(`  Health: http://localhost:${PORT}/health`);
-    console.log('═══════════════════════════════════════════');
+initSchema()
+  .then(() => {
+    console.log('✅ Database schema is up to date.');
+  })
+  .catch((err) => {
+    console.error('❌ Database schema error:', err.message);
   });
-}
-
-start();
