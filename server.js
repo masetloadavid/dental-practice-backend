@@ -112,7 +112,15 @@ app.use((err, req, res, next) => {
 // Railway injects PORT automatically. We fall back to 3001 for local dev.
 const PORT = process.env.PORT || 3001;
 
-app.listen(PORT, '0.0.0.0', () => {
+async function start() {
+  try {
+    await initSchema();
+    console.log('Schema initialized');
+  } catch (err) {
+    console.error('Schema init failed:', err.message);
+  }
+
+  app.listen(PORT, '0.0.0.0', () => {
   console.log('=================================');
   console.log('SmileCare Dental Backend is running!');
   console.log(`Local: http://localhost:${PORT}`);
