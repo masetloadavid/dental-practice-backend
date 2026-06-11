@@ -20,7 +20,7 @@ require('dotenv').config();
 
 const express  = require('express');
 const cors     = require('cors');
-const { initSchema } = require('./db');
+// const { initSchema } = require('./db');
 
 // ── CREATE THE EXPRESS APP ────────────────────────────────────────────────────
 const app = express();
