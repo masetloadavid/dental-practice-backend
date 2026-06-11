@@ -70,37 +70,37 @@ async function sendWhatsAppMessage(to, message) {
   // ── SIMULATION (active by default — safe for development) ─────────────────
   // Remove this block when you switch to a real provider below.
  // console.log('─────────────────────────────────────────');
- // console.log(`[WhatsApp SIMULATION]`);
- // console.log(`To:      ${to}`);
- // console.log(`Message: ${message}`);
- // console.log('─────────────────────────────────────────');
- // return { success: true, provider: 'simulation' };
+  console.log(`[WhatsApp SIMULATION]`);
+  console.log(`To:      ${to}`);
+  console.log(`Message: ${message}`);
+  console.log('─────────────────────────────────────────');
+  return { success: true, provider: 'simulation' };
   // ─────────────────────────────────────────────────────────────────────────
 
 
   // ── OPTION A: TWILIO ──────────────────────────────────────────────────────
   // Uncomment this block (and comment out the simulation above) to use Twilio.
   //
-   const twilio = require('twilio');
-   const client = twilio(
-     process.env.TWILIO_ACCOUNT_SID,
-     process.env.TWILIO_AUTH_TOKEN
-   );
-   try {
-     console.log("SENDING TO:", `whatsapp:${to}`);
+  // const twilio = require('twilio');
+  // const client = twilio(
+  // process.env.TWILIO_ACCOUNT_SID,
+  // process.env.TWILIO_AUTH_TOKEN
+  // );
+  // try {
+   //  console.log("SENDING TO:", `whatsapp:${to}`);
 
-const result = await client.messages.create({
-  from: process.env.TWILIO_WHATSAPP_NUMBER,
-  to: `whatsapp:${to}`,
-  body: message,
-});
+// const result = await client.messages.create({
+//  from: process.env.TWILIO_WHATSAPP_NUMBER,
+//  to: `whatsapp:${to}`,
+//  body: message,
+// });
 
-console.log("TWILIO RESULT:", result.sid);
-     return { success: true, provider: 'twilio' };
-   } catch (err) {
-     console.error('[Twilio Error]', err.message);
-     return { success: false, provider: 'twilio', error: err.message };
-   }
+// console.log("TWILIO RESULT:", result.sid);
+   //  return { success: true, provider: 'twilio' };
+    // } catch (err) {
+    // console.error('[Twilio Error]', err.message);
+    // return { success: false, provider: 'twilio', error: err.message };
+   // }
   // ─────────────────────────────────────────────────────────────────────────
 
 
