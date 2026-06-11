@@ -89,13 +89,13 @@ app.get('/', (req, res) => {
 });
 
 // ── API ROUTES ────────────────────────────────────────────────────────────────
-app.use('/api/patients', require('./patients'));
-app.use('/api/appointments', require('./appointments'));
+// app.use('/api/patients', require('./patients'));
+// app.use('/api/appointments', require('./appointments'));
 app.get('/api/reminders/run', (req, res) => {
   res.json({ success: true, message: 'Temporary GET route working' });
 });
-app.use('/api/reminders', require('./reminders'));
-app.use('/api/analytics', require('./analytics'));
+// app.use('/api/reminders', require('./reminders'));
+// app.use('/api/analytics', require('./analytics'));
 
 // ── 404 HANDLER ───────────────────────────────────────────────────────────────
 app.use((req, res) => {
