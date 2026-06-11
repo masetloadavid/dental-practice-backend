@@ -24,15 +24,15 @@ const pool = new Pool({
 });
 
 // ── TEST THE CONNECTION ON STARTUP ────────────────────────────────────────────
-pool.connect((err, client, release) => {
-  if (err) {
-    console.error('❌ Could not connect to PostgreSQL:', err.message);
-    console.error('   Make sure DATABASE_URL is set correctly in your .env file.');
-    return;
-  }
-  console.log('✅ Connected to PostgreSQL database.');
-  release(); // return the client back to the pool
-});
+// pool.connect((err, client, release) => {
+//  if (err) {
+ //   console.error('❌ Could not connect to PostgreSQL:', err.message);
+  //  console.error('   Make sure DATABASE_URL is set correctly in your .env file.');
+  //  return;
+//  }
+//  console.log('✅ Connected to PostgreSQL database.');
+//  release(); // return the client back to the pool
+// });
 
 // ── AUTO-CREATE TABLES ON FIRST RUN ──────────────────────────────────────────
 // Reads schema.sql and runs it if the tables do not exist yet.
