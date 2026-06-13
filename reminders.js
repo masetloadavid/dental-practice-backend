@@ -207,7 +207,7 @@ router.post('/run', async (req, res) => {
       if (alreadySent.rows.length > 0) continue;
 
       const message      = buildRecallMessage(patient.full_name);
-      console.log('ABOUT TO SEND WHATSAPP TO:', reminder.phone);
+      console.log('ABOUT TO SEND WHATSAPP TO:', patient.phone);
       const sendResult   = await sendWhatsAppMessage(patient.phone, message);
 
       if (sendResult.success) {
