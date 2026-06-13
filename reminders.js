@@ -74,6 +74,7 @@ router.post('/run', async (req, res) => {
   const today = new Date().toLocaleDateString("en-CA", {
   timeZone: "Africa/Johannesburg",
 });
+  console.log("TODAY VALUE:", today);
   const results   = { sent: [], skipped: [], errors: [] };
 
   try {
