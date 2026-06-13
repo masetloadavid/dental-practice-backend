@@ -93,7 +93,7 @@ router.post('/run', async (req, res) => {
        JOIN patients p     ON p.id = r.patient_id
        LEFT JOIN appointments a ON a.id = r.appointment_id
        WHERE r.sent = false
-         AND r.scheduled_for = $1
+         AND r.scheduled_for::date = $1::date
          AND r.reminder_type != 'six_month_recall'`,
       [today]
     );
@@ -228,15 +228,15 @@ router.post('/run', async (req, res) => {
     }
 
     // Return a summary
-    // res.json({
-    //  date:          today,
-    //  total_sent:    results.sent.length,
-    //  total_skipped: results.skipped.length,
-    //  total_errors:  results.errors.length,
-    //  sent:          results.sent,
-    //  skipped:       results.skipped,
-    //  errors:        results.errors,
-   // });
+     res.json({
+      date:          today,
+      total_sent:    results.sent.length,
+      total_skipped: results.skipped.length,
+      total_errors:  results.errors.length,
+      sent:          results.sent,
+      skipped:       results.skipped,
+      errors:        results.errors,
+    });
 
   } catch (err) {
   console.error('REMINDER ERROR:', err);
