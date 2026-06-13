@@ -65,13 +65,15 @@ router.get('/', async (req, res) => {
 //
 // Returns: a summary of what was sent
 router.post('/run', async (req, res) => {
-  return res.status(200).json({
-    success: true,
-    message: 'Reminder job started'
-  });
+  // return res.status(200).json({
+  //success: true,
+  //  message: 'Reminder job started'
+  // });
 
   console.log('REAL REMINDER ROUTE STARTED');
-  const today     = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+  const today = new Date().toLocaleDateString("en-CA", {
+  timeZone: "Africa/Johannesburg",
+});
   const results   = { sent: [], skipped: [], errors: [] };
 
   try {
