@@ -63,6 +63,65 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// — POST /api/appointments/book-online
+router.post('/book-online', async (req, res) => {
+  const {
+    full_name,
+    phone,
+    appointment_date,
+    appointment_time,
+    appointment_type = 'Check-up & Clean'
+  } = req.body;
+
+  try {
+    // 1. Create patient
+    const patientResult = await pool.query(
+      `INSERT INTO patients (full_name, phone, whatsapp_opt_in)
+       VALUES ($1, $2, true)
+       RETURNING id`,
+      [full_name, phone]
+    );
+
+    const patient_id = patientResult.rows[0].id;
+
+    // 2. Create appointment
+    const appointmentResult = await pool.query(
+      `INSERT INTO appointments
+       (patient_id, appointment_date, appointment_time, appointment_type, status)
+       VALUES ($1, $2, $3, $4, 'confirmed')
+       RETURNING id`,
+      [
+        patient_id,
+        appointment_date,
+        appointment_time,
+        appointment_type
+      ]
+    );
+
+    const appointment_id = appointmentResult.rows[0].id;
+
+    // 3. Create reminders
+    await pool.query(
+      `INSERT INTO reminders (appointment_id, reminder_type, scheduled_for)
+       VALUES
+       ($1, 'one_week_before', $2::date - INTERVAL '7 days'),
+       ($1, 'one_day_before', $2::date - INTERVAL '1 day'),
+       ($1, 'day_of', $2)`,
+      [appointment_id, appointment_date]
+    );
+
+    res.json({
+      success: true,
+      patient_id,
+      appointment_id
+    });
+
+  } catch (err) {
+    console.error('Online booking error:', err.message);
+    res.status(500).json({ error: 'Failed to create online booking' });
+  }
+});
+
 // ── POST /api/appointments ────────────────────────────────────────────────────
 // Creates a new appointment and automatically schedules the three reminder rows.
 // Body: { patient_id, appointment_date, appointment_time, appointment_type?,
