@@ -70,7 +70,7 @@ router.post('/book-online', async (req, res) => {
     phone,
     appointment_date,
     appointment_time,
-    payment_type,
+    payment_type = 'Cash',
     appointment_type = 'Check-up & Clean'
   } = req.body;
 
@@ -87,17 +87,18 @@ router.post('/book-online', async (req, res) => {
 
     // 2. Create appointment
     const appointmentResult = await pool.query(
-      `INSERT INTO appointments
-       (patient_id, appointment_date, appointment_time, appointment_type, status)
-       VALUES ($1, $2, $3, $4, 'confirmed')
-       RETURNING id`,
-      [
-        patient_id,
-        appointment_date,
-        appointment_time,
-        appointment_type
-      ]
-    );
+  `INSERT INTO appointments
+  (patient_id, appointment_date, appointment_time, appointment_type, status, payment_type)
+  VALUES ($1, $2, $3, $4, 'confirmed', $5)
+  RETURNING id`,
+  [
+    patient_id,
+    appointment_date,
+    appointment_time,
+    appointment_type,
+    payment_type
+  ]
+);
 
     const appointment_id = appointmentResult.rows[0].id;
 
