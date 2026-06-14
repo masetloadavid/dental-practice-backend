@@ -70,6 +70,7 @@ router.post('/book-online', async (req, res) => {
     phone,
     appointment_date,
     appointment_time,
+    payment_type,
     appointment_type = 'Check-up & Clean'
   } = req.body;
 
