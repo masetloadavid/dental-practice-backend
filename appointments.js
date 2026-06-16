@@ -66,13 +66,16 @@ router.get('/:id', async (req, res) => {
 // — POST /api/appointments/book-online
 router.post('/book-online', async (req, res) => {
   const {
-    full_name,
-    phone,
-    appointment_date,
-    appointment_time,
-    payment_type = 'Cash',
-    appointment_type = 'Check-up & Clean'
-  } = req.body;
+  full_name,
+  phone,
+  appointment_date,
+  appointment_time,
+  payment_type = 'Cash',
+  medical_aid_name = '',
+  membership_number = '',
+  beneficiary_type = '',
+  appointment_type = 'Check-up & Clean'
+} = req.body;
 
   try {
     // 1. Create patient
@@ -88,15 +91,18 @@ router.post('/book-online', async (req, res) => {
     // 2. Create appointment
     const appointmentResult = await pool.query(
   `INSERT INTO appointments
-  (patient_id, appointment_date, appointment_time, appointment_type, status, payment_type)
-  VALUES ($1, $2, $3, $4, 'confirmed', $5)
+  (patient_id, appointment_date, appointment_time, appointment_type, status, payment_type, medical_aid_name, membership_number, beneficiary_type)
+  VALUES ($1, $2, $3, $4, 'confirmed', $5, $6, $7, $8)
   RETURNING id`,
   [
     patient_id,
     appointment_date,
     appointment_time,
     appointment_type,
-    payment_type
+    payment_type,
+    medical_aid_name,
+    membership_number,
+    beneficiary_type
   ]
 );
 
