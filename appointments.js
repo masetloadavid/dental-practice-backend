@@ -81,14 +81,28 @@ router.post('/book-online', async (req, res) => {
 
   try {
     // 1. Create patient
-    const patientResult = await pool.query(
-  `INSERT INTO patients (full_name, phone, email, date_of_birth, whatsapp_opt_in)
-   VALUES ($1, $2, $3, $4, true)
-   RETURNING id`,
-  [full_name, phone, email, date_of_birth]
+    // 1. Check if patient already exists
+let patient_id;
+
+const existingPatient = await pool.query(
+  `SELECT id FROM patients
+   WHERE phone = $1 OR email = $2
+   LIMIT 1`,
+  [phone, email]
 );
 
-    const patient_id = patientResult.rows[0].id;
+if (existingPatient.rows.length > 0) {
+  patient_id = existingPatient.rows[0].id;
+} else {
+  const patientResult = await pool.query(
+    `INSERT INTO patients (full_name, phone, email, date_of_birth, whatsapp_opt_in)
+     VALUES ($1, $2, $3, $4, true)
+     RETURNING id`,
+    [full_name, phone, email, date_of_birth]
+  );
+
+  patient_id = patientResult.rows[0].id;
+}
 
     // 2. Create appointment
     const appointmentResult = await pool.query(
