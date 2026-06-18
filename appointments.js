@@ -86,9 +86,10 @@ let patient_id;
 
 const existingPatient = await pool.query(
   `SELECT id FROM patients
-   WHERE phone = $1 OR email = $2
+   WHERE (phone = $1 OR email = $2)
+   AND full_name = $3
    LIMIT 1`,
-  [phone, email]
+  [phone, email, full_name]
 );
 
 if (existingPatient.rows.length > 0) {
