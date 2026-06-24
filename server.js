@@ -20,6 +20,7 @@ require('dotenv').config();
 
 const express  = require('express');
 const cors     = require('cors');
+const nodemailer = require('nodemailer');
 // const { initSchema } = require('./db');
 
 // ── CREATE THE EXPRESS APP ────────────────────────────────────────────────────
@@ -62,6 +63,15 @@ app.use(cors({
 // ── BODY PARSER ───────────────────────────────────────────────────────────────
 // Lets Express read JSON request bodies (e.g. POST /api/patients)
 app.use(express.json());
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
+  }
+});
 
 // ── HEALTH CHECK ──────────────────────────────────────────────────────────────
 // Railway pings this to know the service is alive. Do not remove it.
@@ -93,6 +103,29 @@ app.get('/', (req, res) => {
  app.use('/api/appointments', require('./appointments'));
  app.use('/api/reminders', require('./reminders'));
  app.use('/api/analytics', require('./analytics'));
+
+app.post('/api/reviews/negative', async (req, res) => {
+  try {
+    const { patientName, feedback } = req.body;
+
+    await transporter.sendMail({
+      from: process.env.SMTP_USER,
+      to: process.env.CLINICAL_EMAIL,
+      subject: 'Negative Patient Review Alert',
+      text: `
+Patient: ${patientName || 'Unknown'}
+
+Feedback:
+${feedback || 'Patient selected negative review'}
+      `
+    });
+
+    res.json({ success: true, message: 'Email sent successfully' });
+  } catch (error) {
+    console.error('Email error:', error);
+    res.status(500).json({ error: 'Failed to send email' });
+  }
+}); 
 
 // ── 404 HANDLER ───────────────────────────────────────────────────────────────
 app.use((req, res) => {
