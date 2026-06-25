@@ -70,6 +70,17 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS
+  },
+  connectionTimeout: 5000,
+  greetingTimeout: 5000,
+  socketTimeout: 5000
+});
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.log("SMTP VERIFY ERROR:", error);
+  } else {
+    console.log("SMTP READY");
   }
 });
 
