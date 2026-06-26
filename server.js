@@ -20,7 +20,7 @@ require('dotenv').config();
 
 const express  = require('express');
 const cors     = require('cors');
-const nodemailer = require('nodemailer');
+const https = require('https');
 // const { initSchema } = require('./db');
 
 // ── CREATE THE EXPRESS APP ────────────────────────────────────────────────────
@@ -63,27 +63,6 @@ app.use(cors({
 // ── BODY PARSER ───────────────────────────────────────────────────────────────
 // Lets Express read JSON request bodies (e.g. POST /api/patients)
 app.use(express.json());
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
-  },
-  tls: {
-    rejectUnauthorized: false
-  },
-  connectionTimeout: 30000,
-});
-
-transporter.verify((error, success) => {
-  if (error) {
-    console.log("SMTP VERIFY ERROR:", error);
-  } else {
-    console.log("SMTP READY");
-  }
-});
 
 // ── HEALTH CHECK ──────────────────────────────────────────────────────────────
 // Railway pings this to know the service is alive. Do not remove it.
