@@ -25,37 +25,7 @@ const https = require('https');
 
 // ── CREATE THE EXPRESS APP ────────────────────────────────────────────────────
 const app = express();
-const response = await fetch("https://api.brevo.com/v3/smtp/email", {
-  method: "POST",
-  headers: {
-    "accept": "application/json",
-    "api-key": process.env.BREVO_API_KEY,
-    "content-type": "application/json"
-  },
-  body: JSON.stringify({
-    sender: {
-      name: "Love2Smile Dental Suites",
-      email: process.env.SMTP_USER
-    },
-    to: [
-      {
-        email: process.env.CLINICAL_EMAIL
-      }
-    ],
-    subject: "Negative Patient Review Alert",
-    textContent: `Patient: ${patientName || 'Unknown'}
 
-Feedback:
-${feedback || 'Patient selected negative review'}`
-  })
-});
-
-const result = await response.json();
-console.log("Brevo response:", result);
-
-if (!response.ok) {
-  throw new Error(JSON.stringify(result));
-}
 // ── CORS ──────────────────────────────────────────────────────────────────────
 // This tells the browser that only your React frontend is allowed to
 // call this API. Requests from any other origin will be blocked.
