@@ -117,7 +117,17 @@ const response = await fetch("https://api.brevo.com/v3/smtp/email", {
       }
     ],
     subject: "Negative Patient Review Alert",
-textContent: `Patient: ${patientName || 'Unknown'}\n\nFeedback:\n${feedback || 'Patient selected negative review'}`
+textContent:
+`🚨 Negative Review Alert — Love2Smile Dental Suites
+
+Patient: ${patientName || 'Unknown'}
+Date: ${new Date().toLocaleString('en-ZA')}
+
+Feedback:
+${feedback || 'Patient selected negative review'}
+
+Action Required:
+Please follow up with this patient as soon as possible.`
   })
 });
 
