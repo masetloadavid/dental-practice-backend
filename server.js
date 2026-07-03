@@ -96,6 +96,8 @@ app.get('/', (req, res) => {
  app.use('/api/analytics', require('./analytics'));
 
 app.post('/api/reviews/negative', async (req, res) => {
+  console.log("NEGATIVE REVIEW ROUTE HIT");
+console.log("BODY:", req.body);
   try {
     const { patientName, feedback } = req.body;
 
