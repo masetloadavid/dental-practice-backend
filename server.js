@@ -97,7 +97,7 @@ app.get('/', (req, res) => {
 
 app.post('/api/reviews/negative', async (req, res) => {
   try {
-    const { patientName, feedback } = req.body;
+    const { patientName, phone, rating, feedback } = req.body;
 
 const response = await fetch("https://api.brevo.com/v3/smtp/email", {
   method: "POST",
@@ -117,17 +117,22 @@ const response = await fetch("https://api.brevo.com/v3/smtp/email", {
       }
     ],
     subject: "Negative Patient Review Alert",
-textContent:
-`🚨 Negative Review Alert — Love2Smile Dental Suites
+textContent: `
+🚨 Negative Review Alert — Love2Smile Dental Suites
 
 Patient: ${patientName || 'Unknown'}
+Phone: ${phone || 'No phone provided'}
 Date: ${new Date().toLocaleString('en-ZA')}
+
+Rating:
+${rating || 'Not provided'}
 
 Feedback:
 ${feedback || 'Patient selected negative review'}
 
 Action Required:
-Please follow up with this patient as soon as possible.`
+Please follow up with this patient as soon as possible.
+`
   })
 });
 
