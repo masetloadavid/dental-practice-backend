@@ -156,7 +156,7 @@ res.json({
 
 app.post('/api/reviews/send-request', async (req, res) => {
   try {
-    const { patientName, patientEmail } = req.body;
+    const { patientName, patientEmail, patientPhone } = req.body;
 
     if (!patientEmail) {
       return res.status(400).json({ error: 'Patient email required' });
