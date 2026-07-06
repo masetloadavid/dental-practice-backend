@@ -162,7 +162,8 @@ app.post('/api/reviews/send-request', async (req, res) => {
       return res.status(400).json({ error: 'Patient email required' });
     }
 
-    const reviewLink = "https://dental-practice-frontend-production.up.railway.app/review";
+    const reviewLink =
+  `https://dental-practice-frontend-production.up.railway.app/review?name=${encodeURIComponent(patientName)}&phone=${encodeURIComponent(patientPhone)}`;
 
     const response = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
