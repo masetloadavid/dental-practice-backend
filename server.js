@@ -121,7 +121,7 @@ textContent: `
 🚨 Negative Review Alert — Love2Smile Dental Suites
 
 Patient: ${patientName || 'Unknown'}
-Phone: ${patientphone || 'No phone provided'}
+Phone: ${patientPhone || 'No phone provided'}
 Date: ${new Date().toLocaleString('en-ZA', {
     timeZone: 'Africa/Johannesburg'
 })}
