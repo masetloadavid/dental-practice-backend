@@ -64,7 +64,7 @@ router.get('/', async (req, res) => {
 //   5. Checks for any 6-month recalls due and sends those too
 //
 // Returns: a summary of what was sent
-router.get('/run', async (req, res) => {
+router.post('/run', async (req, res) => {
   // return res.status(200).json({
   //success: true,
   //  message: 'Reminder job started'
