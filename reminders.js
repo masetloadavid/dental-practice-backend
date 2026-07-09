@@ -96,7 +96,7 @@ router.post('/run', async (req, res) => {
        JOIN patients p     ON p.id = r.patient_id
        LEFT JOIN appointments a ON a.id = r.appointment_id
        WHERE r.sent = false
-         AND r.scheduled_for::date = $1::date
+         AND r.scheduled_for <= NOW()
          AND r.reminder_type != 'six_month_recall'`,
       [today]
     );
@@ -104,6 +104,17 @@ router.post('/run', async (req, res) => {
     console.log('DUE REMINDERS FOUND:', dueReminders.rows.length);
 
     for (const reminder of dueReminders.rows) {
+      console.log(
+  "Processing reminder:",
+  {
+    id: reminder.reminder_id,
+    patient: reminder.full_name,
+    type: reminder.reminder_type,
+    scheduled_for: reminder.scheduled_for,
+    now: new Date().toISOString()
+  }
+);
+
       // Skip if patient has not opted in
       if (!reminder.whatsapp_opt_in) {
         results.skipped.push({
