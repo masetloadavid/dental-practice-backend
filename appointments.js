@@ -126,13 +126,31 @@ if (existingPatient.rows.length > 0) {
     const appointment_id = appointmentResult.rows[0].id;
 
     // 3. Create reminders
-    await pool.query(
-      `INSERT INTO reminders (appointment_id, reminder_type, scheduled_for)
-       VALUES
-       ($1, 'one_week_before', $2::date - INTERVAL '7 days'),
-       ($1, 'one_day_before', $2::date - INTERVAL '1 day'),
-       ($1, 'day_of', $2)`,
-      [appointment_id, appointment_date]
+    // Create reminder timestamps
+
+const oneWeekReminder = `${appointment_date} 07:00:00`;
+const oneDayReminder = new Date(appointment_date);
+oneDayReminder.setDate(oneDayReminder.getDate() - 1);
+
+const oneDayReminderString =
+    oneDayReminder.toISOString().split("T")[0] + " 07:00:00";
+
+const dayOfReminder = `${appointment_date} 07:00:00`;
+
+await pool.query(`
+INSERT INTO reminders
+(appointment_id, reminder_type, scheduled_for)
+VALUES
+($1,'one_week_before',$2),
+($1,'one_day_before',$3),
+($1,'day_of',$4)
+`,
+[
+    appointment_id,
+    oneWeekReminder,
+    oneDayReminderString,
+    dayOfReminder
+]);
     );
 
     res.json({
