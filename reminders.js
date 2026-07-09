@@ -97,8 +97,7 @@ router.post('/run', async (req, res) => {
        LEFT JOIN appointments a ON a.id = r.appointment_id
        WHERE r.sent = false
          AND r.scheduled_for <= NOW()
-         AND r.reminder_type != 'six_month_recall'`,
-      [today]
+         AND r.reminder_type != 'six_month_recall'`
     );
 
     console.log('DUE REMINDERS FOUND:', dueReminders.rows.length);
