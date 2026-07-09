@@ -184,6 +184,11 @@ if (reminder.reminder_type === 'day_of') {
       // Send the WhatsApp message
       console.log('ABOUT TO SEND WHATSAPP TO:', reminder.phone);
       const sendResult = await sendWhatsAppMessage(reminder.phone, message);
+      console.log("WHATSAPP RESULT:", sendResult);
+
+if (!sendResult.success) {
+    console.error("FAILED TO SEND:", sendResult.error);
+}
 
       if (sendResult.success) {
         // Mark reminder as sent
