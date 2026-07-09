@@ -159,6 +159,8 @@ if (reminder.reminder_type === 'day_of') {
         })
     );
 
+    console.log("South Africa hour:", saHour);
+
     if (saHour < 7) {
         console.log(
             `Skipping ${reminder.full_name} - Too early (${saHour}:00)`
