@@ -146,6 +146,28 @@ router.post('/run', async (req, res) => {
           continue;
       }
 
+      // Prevent day-of reminders from sending before 07:00
+if (reminder.reminder_type === 'day_of') {
+    const now = new Date();
+
+    // South African time
+    const saHour = Number(
+        now.toLocaleString("en-US", {
+            timeZone: "Africa/Johannesburg",
+            hour: "2-digit",
+            hour12: false
+        })
+    );
+
+    if (saHour < 7) {
+        console.log(
+            `Skipping ${reminder.full_name} - Too early (${saHour}:00)`
+        );
+        continue;
+    }
+}
+
+
       // Send the WhatsApp message
       console.log('ABOUT TO SEND WHATSAPP TO:', reminder.phone);
       const sendResult = await sendWhatsAppMessage(reminder.phone, message);
