@@ -151,7 +151,6 @@ VALUES
     oneDayReminderString,
     dayOfReminder
 ]);
-    );
 
     res.json({
       success: true,
