@@ -180,7 +180,58 @@ if (reminder.reminder_type === 'day_of') {
     }
 }
 
+// Send appointment reminder by email (Brevo)
 
+const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+method: "POST",
+headers: {
+accept: "application/json",
+"api-key": process.env.BREVO_API_KEY,
+"content-type": "application/json"
+},
+body: JSON.stringify({
+sender: {
+name: "Love2Smile Dental Suites",
+email: process.env.SMTP_USER
+},
+to: [
+{
+email: reminder.email
+}
+],
+subject: "Appointment Reminder - Love2Smile Dental Suites",
+htmlContent: `
+<h2>Hello ${reminder.full_name},</h2>
+
+<p>This is a friendly reminder about your upcoming appointment.</p>
+
+<p><strong>Date:</strong> ${apptDateFormatted}</p>
+
+<p><strong>Time:</strong> ${apptTime}</p>
+
+<p><strong>Treatment:</strong> ${reminder.appointment_type}</p>
+
+<br>
+
+<p>We look forward to seeing you.</p>
+
+<p>
+<strong>Love2Smile Dental Suites</strong><br>
+39A Reitz Cnr Mentz Laan<br>
+Bela-Bela, 0480<br><br>
+
+Phone:<br>
+081 740 9291<br>
+061 614 5079
+</p>
+`
+})
+});
+
+const brevoResult = await response.json();
+
+console.log("BREVO RESULT:", brevoResult);
+      
       // Send the WhatsApp message
       console.log('ABOUT TO SEND WHATSAPP TO:', reminder.phone);
       const sendResult = await sendWhatsAppMessage(reminder.phone, message);
