@@ -87,6 +87,7 @@ router.post('/run', async (req, res) => {
          p.id              AS patient_id,
          p.full_name,
          p.phone,
+         p.email,
          p.whatsapp_opt_in,
          a.appointment_date,
          a.appointment_time,
@@ -221,6 +222,7 @@ if (!sendResult.success) {
          p.id,
          p.full_name,
          p.phone,
+         p.email,
          p.whatsapp_opt_in,
          MAX(a.appointment_date) AS last_appointment_date
        FROM patients p
