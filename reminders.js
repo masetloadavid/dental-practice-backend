@@ -230,6 +230,12 @@ Phone:<br>
 
 const brevoResult = await response.json();
 
+const sendResult = {
+success: response.ok,
+provider: "Brevo",
+error: response.ok ? null : JSON.stringify(brevoResult)
+};
+      
 console.log("BREVO RESULT:", brevoResult);
       
       // Send the WhatsApp message
