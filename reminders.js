@@ -115,15 +115,15 @@ router.post('/run', async (req, res) => {
   }
 );
 
-      // Skip if patient has not opted in
-      if (!reminder.whatsapp_opt_in) {
-        results.skipped.push({
-          reminder_id: reminder.reminder_id,
-          patient:     reminder.full_name,
-          reason:      'WhatsApp opt-in is false',
-        });
-        continue;
-      }
+      // Skip if patient has no email address
+if (!reminder.email) {
+results.skipped.push({
+reminder_id: reminder.reminder_id,
+patient: reminder.full_name,
+reason: 'No email address',
+});
+continue;
+}
 
       // Skip if the appointment has been cancelled
       if (reminder.appointment_status === 'cancelled') {
