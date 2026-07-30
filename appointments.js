@@ -297,7 +297,7 @@ WHERE a.id = $1
 
 const patient = appointment.rows[0];
 
-if (patient) {
+if (patient && patient.email) {
 
 const existingReview = await pool.query(
 `
@@ -310,7 +310,28 @@ WHERE appointment_id = $1
 
 if (existingReview.rows.length === 0) {
 
-// We'll insert the review request here in the next step.
+const scheduledFor = new Date();
+scheduledFor.setHours(18, 0, 0, 0);
+
+await pool.query(
+`
+INSERT INTO review_requests (
+appointment_id,
+patient_id,
+email,
+status,
+scheduled_for
+)
+VALUES ($1, $2, $3, $4, $5)
+`,
+[
+id,
+patient.patient_id,
+patient.email,
+"pending",
+scheduledFor
+]
+);
 
 }
 
