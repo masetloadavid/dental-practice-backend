@@ -295,7 +295,29 @@ WHERE a.id = $1
 [id]
 );
 
+const patient = appointment.rows[0];
+
+if (patient) {
+
+const existingReview = await pool.query(
+`
+SELECT id
+FROM review_requests
+WHERE appointment_id = $1
+`,
+[id]
+);
+
+if (existingReview.rows.length === 0) {
+
+// We'll insert the review request here in the next step.
+
 }
+
+}
+
+}
+    
     
     res.json(result.rows[0]);
   } catch (err) {
