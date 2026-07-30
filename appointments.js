@@ -275,10 +275,28 @@ router.put('/:id', async (req, res) => {
       `UPDATE appointments SET ${fields.join(', ')} WHERE id = $${counter} RETURNING *`,
       values
     );
-
+    
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Appointment not found.' });
     }
+if (status === "completed") {
+
+const appointment = await pool.query(
+`
+SELECT
+a.id,
+p.id AS patient_id,
+p.email
+FROM appointments a
+JOIN patients p
+ON a.patient_id = p.id
+WHERE a.id = $1
+`,
+[id]
+);
+
+}
+    
     res.json(result.rows[0]);
   } catch (err) {
     console.error('PUT /api/appointments/:id error:', err.message);
