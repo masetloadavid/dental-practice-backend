@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const pool = require("./db");router.post("/run", async (req, res) => {
+const { pool } = require("./db");
+
+router.post("/run", async (req, res) => {
 const now = new Date();
 
 try {
