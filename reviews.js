@@ -17,10 +17,16 @@ ORDER BY scheduled_for ASC
 [now]
 );
 
+for (const review of reviews.rows) {
+console.log(
+`Processing review request ${review.id} for ${review.email}`
+);
+}
+
 return res.json({
 success: true,
 found: reviews.rows.length,
-reviews: reviews.rows
+processed: reviews.rows.length
 });
 
 } catch (err) {
