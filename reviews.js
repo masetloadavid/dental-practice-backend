@@ -23,6 +23,7 @@ console.log(
 );
   const reviewLink =
 `https://dental-practice-frontend-production.up.railway.app/review?patientId=${review.patient_id}&appointmentId=${review.appointment_id}`;
+const response = await fetch("https://api.brevo.com/v3/smtp/email", {
 }
 
 return res.json({
