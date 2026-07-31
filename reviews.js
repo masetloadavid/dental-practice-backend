@@ -22,7 +22,7 @@ console.log(
 `Processing review request ${review.id} for ${review.email}`
 );
   const reviewLink =
-`https://dental-practice-frontend-production.up.railway.app/review?patientId=${review.patient_id}&appointmentId
+`https://dental-practice-frontend-production.up.railway.app/review?patientId=${review.patient_id}&appointmentId=${review.appointment_id}`;
 }
 
 return res.json({
