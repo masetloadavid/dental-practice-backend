@@ -21,9 +21,6 @@ for (const review of reviews.rows) {
 console.log(
 `Processing review request ${review.id} for ${review.email}`
 );
-  const reviewLink =
-`https://dental-practice-frontend-production.up.railway.app/review?patientId=${review.patient_id}&appointmentId=${review.appointment_id}`;
-const response = await fetch("https://api.brevo.com/v3/smtp/email", {
 }
 
 return res.json({
