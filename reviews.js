@@ -1,8 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const { pool } = require("./db");
+const sendReviewRequest = require("./reviewMailer");
 
 router.post("/run", async (req, res) => {
+    const secret = req.headers["x-review-secret"];
+
+if (secret !== process.env.REVIEW_RUN_SECRET) {
+return res.status(401).json({
+success: false,
+error: "Unauthorized"
+});
+}
+
 const now = new Date();
 
 try {
@@ -18,9 +28,48 @@ ORDER BY scheduled_for ASC
 );
 
 for (const review of reviews.rows) {
-console.log(
-`Processing review request ${review.id} for ${review.email}`
+
+try {
+
+const patient = await pool.query(
+`
+SELECT full_name, phone, email
+FROM patients
+WHERE id = $1
+`,
+[review.patient_id]
 );
+
+if (patient.rows.length === 0) {
+console.log(`Patient not found for review ${review.id}`);
+continue;
+}
+
+const p = patient.rows[0];
+
+await sendReviewRequest({
+patientName: p.full_name,
+patientEmail: p.email,
+patientPhone: p.phone
+});
+
+await pool.query(
+`
+UPDATE review_requests
+SET
+status='sent',
+sent_at=NOW()
+WHERE id=$1
+`,
+[review.id]
+);
+
+console.log(`Review request sent to ${p.full_name}`);
+
+} catch (err) {
+console.error(err);
+}
+
 }
 
 return res.json({

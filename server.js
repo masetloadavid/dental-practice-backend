@@ -17,6 +17,9 @@
 // Load environment variables from .env (only needed locally;
 // Railway injects them automatically in production).
 require('dotenv').config();
+console.log("BREVO_API_KEY:", process.env.BREVO_API_KEY ? "Loaded" : "Missing");
+console.log("SMTP_USER:", process.env.SMTP_USER ? process.env.SMTP_USER : "Missing");
+console.log("NODE_ENV:", process.env.NODE_ENV);
 
 const express  = require('express');
 const cors     = require('cors');
