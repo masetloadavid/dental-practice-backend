@@ -97,7 +97,7 @@ router.post('/run', async (req, res) => {
        JOIN patients p     ON p.id = r.patient_id
        LEFT JOIN appointments a ON a.id = r.appointment_id
        WHERE r.sent = false
-         AND r.scheduled_for <= NOW()
+         AND r.scheduled_for = CURRENT_DATE
          AND r.reminder_type != 'six_month_recall'`
     );
 

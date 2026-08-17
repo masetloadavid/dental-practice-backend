@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const { pool } = require("./db");
 const sendReviewRequest = require("./reviewMailer");
+const reviewController = require('./reviews/reviewController');
+
+router.get("/dashboard", reviewController.dashboard);
 
 router.post("/run", async (req, res) => {
     const secret = req.headers["x-review-secret"];

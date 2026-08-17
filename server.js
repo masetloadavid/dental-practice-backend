@@ -24,7 +24,8 @@ console.log("NODE_ENV:", process.env.NODE_ENV);
 const express  = require('express');
 const cors     = require('cors');
 const https = require('https');
-// const { initSchema } = require('./db');
+const startScheduler = require('./scheduler');
+const { initSchema } = require('./db');
 
 // ── CREATE THE EXPRESS APP ────────────────────────────────────────────────────
 const app = express();
@@ -111,6 +112,21 @@ app.post('/api/reviews/negative', async (req, res) => {
 
 const finalPhone = patientPhone || phone;
 
+const reviewResult = await pool.query(
+`INSERT INTO reviews
+(patient_name, patient_phone, rating, feedback, email_sent)
+VALUES ($1, $2, $3, $4, false)
+RETURNING id`,
+[
+patientName || 'Unknown',
+finalPhone || null,
+Number(rating),
+feedback || 'Patient selected negative review'
+]
+);
+
+const reviewId = reviewResult.rows[0].id;
+
 const response = await fetch("https://api.brevo.com/v3/smtp/email", {
   method: "POST",
   headers: {
@@ -156,6 +172,13 @@ console.log("Brevo response:", result);
 if (!response.ok) {
   throw new Error(JSON.stringify(result));
 }
+
+await pool.query(
+    `UPDATE reviews
+     SET email_sent = true
+     WHERE id = $1`,
+    [reviewId]
+);
 
 res.json({
   success: true,
@@ -243,7 +266,9 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3001;
 
 async function start() {
-  console.log('Starting server without schema check');
+  console.log("Initializing database schema...");
+await initSchema();
+console.log("Database schema initialized.");
 
   app.listen(PORT, '0.0.0.0', () => {
   console.log('=================================');
@@ -251,7 +276,12 @@ async function start() {
   console.log(`Local: http://localhost:${PORT}`);
   console.log(`Health: http://localhost:${PORT}/health`);
   console.log('=================================');
-});
+
+  console.log("About to call startScheduler...");
+
+  startScheduler();
+
+  });
 }
 
 start();

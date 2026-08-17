@@ -51,6 +51,26 @@ CREATE INDEX IF NOT EXISTS idx_appointments_patient_id ON appointments (patient_
 CREATE INDEX IF NOT EXISTS idx_appointments_date       ON appointments (appointment_date);
 CREATE INDEX IF NOT EXISTS idx_appointments_status     ON appointments (status);
 
+-- =========================================================
+-- REVIEW REQUESTS TABLE
+-- =========================================================
+
+CREATE TABLE IF NOT EXISTS review_requests (
+id SERIAL PRIMARY KEY,
+appointment_id INTEGER NOT NULL REFERENCES appointments(id) ON DELETE CASCADE,
+patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+email VARCHAR(255),
+status VARCHAR(30) NOT NULL DEFAULT 'pending',
+scheduled_for TIMESTAMP NOT NULL,
+sent_at TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_review_requests_scheduled
+ON review_requests(scheduled_for);
+
+CREATE INDEX IF NOT EXISTS idx_review_requests_status
+ON review_requests(status);
+
 
 -- ── REMINDERS TABLE ───────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS reminders (
@@ -74,3 +94,20 @@ CREATE INDEX IF NOT EXISTS idx_reminders_appointment_id ON reminders (appointmen
 CREATE INDEX IF NOT EXISTS idx_reminders_patient_id     ON reminders (patient_id);
 -- This index makes the daily reminder check very fast
 CREATE INDEX IF NOT EXISTS idx_reminders_due            ON reminders (scheduled_for, sent);
+
+-- ===========================================
+-- REVIEWS TABLE
+-- ===========================================
+
+CREATE TABLE IF NOT EXISTS reviews (
+id SERIAL PRIMARY KEY,
+patient_name VARCHAR(255),
+patient_phone VARCHAR(30),
+rating INTEGER NOT NULL,
+feedback TEXT,
+email_sent BOOLEAN DEFAULT FALSE,
+created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_reviews_created
+ON reviews(created_at);
