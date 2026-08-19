@@ -100,6 +100,56 @@ app.get('/', (req, res) => {
  app.use('/api/reviews', require('./reviews'));
  app.use('/api/analytics', require('./analytics'));
 
+app.post('/api/reviews/positive', async (req, res) => {
+try {
+const {
+patientName,
+patientPhone,
+phone,
+rating,
+feedback
+} = req.body;
+
+const finalPhone = patientPhone || phone;
+
+if (!rating || Number(rating) < 4 || Number(rating) > 5) {
+return res.status(400).json({
+success: false,
+error: 'Positive review rating must be 4 or 5'
+});
+}
+
+const reviewResult = await pool.query(
+`
+INSERT INTO reviews
+(patient_name, patient_phone, rating, feedback, email_sent)
+VALUES ($1, $2, $3, $4, false)
+RETURNING id
+`,
+[
+patientName || 'Unknown',
+finalPhone || null,
+Number(rating),
+feedback || `Patient selected ${rating}-star review`
+]
+);
+
+res.json({
+success: true,
+reviewId: reviewResult.rows[0].id,
+message: 'Positive review saved successfully'
+});
+
+} catch (error) {
+console.error('Error saving positive review:', error);
+
+res.status(500).json({
+success: false,
+error: 'Failed to save positive review'
+});
+}
+});
+
 app.post('/api/reviews/negative', async (req, res) => {
   try {
     const {
