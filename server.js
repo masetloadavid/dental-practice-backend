@@ -25,7 +25,7 @@ const express  = require('express');
 const cors     = require('cors');
 const https = require('https');
 const startScheduler = require('./scheduler');
-const { initSchema } = require('./db');
+const { pool, initSchema } = require('./db');
 
 // ── CREATE THE EXPRESS APP ────────────────────────────────────────────────────
 const app = express();
