@@ -111,3 +111,31 @@ created_at TIMESTAMP DEFAULT NOW()
 
 CREATE INDEX IF NOT EXISTS idx_reviews_created
 ON reviews(created_at);
+
+-- ============================================================
+-- BIRTHDAY WISHES TABLE
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS birthday_wishes (
+id SERIAL PRIMARY KEY,
+
+patient_id INTEGER NOT NULL
+REFERENCES patients(id) ON DELETE CASCADE,
+
+birthday_year INTEGER NOT NULL,
+
+sent_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+
+status VARCHAR(20) NOT NULL DEFAULT 'sent'
+CHECK (status IN ('sent', 'failed')),
+
+error_message TEXT,
+
+UNIQUE (patient_id, birthday_year)
+);
+
+CREATE INDEX IF NOT EXISTS idx_birthday_wishes_patient_id
+ON birthday_wishes(patient_id);
+
+CREATE INDEX IF NOT EXISTS idx_birthday_wishes_year
+ON birthday_wishes(birthday_year);
