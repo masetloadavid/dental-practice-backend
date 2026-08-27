@@ -1,4 +1,5 @@
 const cron = require("node-cron");
+const { sendBirthdayWishes } = require('./birthdayService');
 
 function startScheduler() {
 console.log("🗓️ Scheduler started");
@@ -25,6 +26,26 @@ console.error("❌ Appointment reminder scheduler failed:", err.message);
 });
 
 console.log("✅ 07:00 job registered");
+
+// ── 08:00 Birthday Wishes Job ──
+
+console.log('Registering 08:00 birthday wishes job...');
+
+cron.schedule('0 8 * * *', async () => {
+console.log('🎂 Running birthday wishes...');
+
+try {
+const data = await sendBirthdayWishes();
+
+console.log('✅ Birthday wishes completed:', data);
+} catch (err) {
+console.error('❌ Birthday wishes scheduler failed:', err.message);
+}
+}, {
+timezone: 'Africa/Johannesburg'
+});
+
+console.log('✅ 08:00 birthday wishes job registered');
 
 //
 // 18:00 Review Request Job
