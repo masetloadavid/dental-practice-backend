@@ -99,6 +99,7 @@ app.get('/', (req, res) => {
  app.use('/api/reminders', require('./reminders'));
  app.use('/api/reviews', require('./reviews'));
  app.use('/api/analytics', require('./analytics'));
+ app.use('/api/auth', require('./auth'));
 
 app.post('/api/reviews/positive', async (req, res) => {
 try {

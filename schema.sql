@@ -139,3 +139,54 @@ ON birthday_wishes(patient_id);
 
 CREATE INDEX IF NOT EXISTS idx_birthday_wishes_year
 ON birthday_wishes(birthday_year);
+
+-- ============================================================
+-- USERS / AUTHENTICATION TABLE
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+
+  full_name VARCHAR(255) NOT NULL,
+
+  username VARCHAR(100) NOT NULL UNIQUE,
+
+  password_hash TEXT NOT NULL,
+
+  role VARCHAR(20) NOT NULL
+    CHECK (role IN ('MANAGER', 'RECEPTIONIST')),
+
+  branch VARCHAR(50),
+
+  is_active BOOLEAN NOT NULL DEFAULT true,
+
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+
+  CONSTRAINT users_receptionist_branch_check
+  CHECK (
+    role = 'MANAGER'
+    OR
+    (
+      role = 'RECEPTIONIST'
+      AND branch IN (
+        'Love2Smile With Braces',
+        'Love2Smile at Reitz',
+        'Love2Smile Cullinan'
+      )
+    )
+  )
+);
+
+CREATE INDEX IF NOT EXISTS idx_users_username
+ON users (username);
+
+CREATE INDEX IF NOT EXISTS idx_users_role
+ON users (role);
+
+CREATE INDEX IF NOT EXISTS idx_users_branch
+ON users (branch);
+
+CREATE INDEX IF NOT EXISTS idx_users_active
+ON users (is_active);
