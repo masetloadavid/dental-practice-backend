@@ -26,6 +26,7 @@ const cors     = require('cors');
 const https = require('https');
 const startScheduler = require('./scheduler');
 const { pool, initSchema } = require('./db');
+const userManagementRouter = require('./userManagement');
 
 // ── CREATE THE EXPRESS APP ────────────────────────────────────────────────────
 const app = express();
@@ -100,6 +101,7 @@ app.get('/', (req, res) => {
  app.use('/api/reviews', require('./reviews'));
  app.use('/api/analytics', require('./analytics'));
  app.use('/api/auth', require('./auth'));
+ app.use('/api/users', userManagementRouter);
 
 app.post('/api/reviews/positive', async (req, res) => {
 try {

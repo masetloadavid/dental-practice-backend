@@ -6,6 +6,11 @@ const express = require('express');
 const router = express.Router();
 const { pool } = require('./db');
 
+const {
+  authenticateToken,
+  requireStaff
+} = require('./authMiddleware');
+
 // ── Branch / dentist configuration ────────────────────────────────────────────
 
 const validBranches = [
@@ -38,18 +43,101 @@ return 'This branch currently has only Dentist 1 available.';
 return null;
 }
 
+// — Restrict appointment access to the user's assigned surgery
+function requireAppointmentAccess(req, res, next) {
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      error: 'Authentication required.'
+    });
+  }
+
+  // Manager can access all surgeries
+  if (req.user.role === 'MANAGER') {
+    return next();
+  }
+
+  // Receptionists must have an assigned surgery
+  if (req.user.role === 'RECEPTIONIST') {
+    if (!req.user.branch) {
+      return res.status(403).json({
+        success: false,
+        error: 'No surgery is assigned to this account.'
+      });
+    }
+
+    // For routes with an appointment ID,
+    // verify that the appointment belongs to the receptionist's surgery.
+    if (req.params && req.params.id) {
+      pool.query(
+        'SELECT branch FROM appointments WHERE id = $1',
+        [req.params.id]
+      )
+        .then((result) => {
+          if (result.rows.length === 0) {
+            return res.status(404).json({
+              success: false,
+              error: 'Appointment not found.'
+            });
+          }
+
+          if (result.rows[0].branch !== req.user.branch) {
+            return res.status(403).json({
+              success: false,
+              error: 'You do not have access to this appointment.'
+            });
+          }
+
+          return next();
+        })
+        .catch((err) => {
+          console.error(
+            'requireAppointmentAccess error:',
+            err.message
+          );
+
+          return res.status(500).json({
+            success: false,
+            error: 'Failed to verify appointment access.'
+          });
+        });
+
+      return;
+    }
+
+    // Routes without an appointment ID are handled by
+    // their own surgery filtering.
+    return next();
+  }
+
+  return res.status(403).json({
+    success: false,
+    error: 'Appointment access denied.'
+  });
+}
 
 // ── GET /api/appointments ─────────────────────────────────────────────────────
 // Returns all appointments joined with patient name.
 // Optional query param: ?date=YYYY-MM-DD
 // Optional query param: ?status=confirmed
-router.get('/', async (req, res) => {
+router.get(
+  '/',
+  authenticateToken,
+  requireStaff,
+  requireAppointmentAccess,
+  async (req, res) => {
 const { date, status } = req.query;
 
 try {
 const conditions = [];
 const values = [];
 let counter = 1;
+
+// Receptionists can only see appointments for their assigned surgery
+if (req.user.role === 'RECEPTIONIST') {
+  conditions.push(`a.branch = $${counter++}`);
+  values.push(req.user.branch);
+}
 
 if (date) {
 conditions.push(`a.appointment_date = $${counter++}`);
@@ -92,7 +180,12 @@ error: 'Failed to fetch appointments.'
 
 // ── GET /api/appointments/:id ─────────────────────────────────────────────────
 
-router.get('/:id', async (req, res) => {
+router.get(
+  '/:id',
+  authenticateToken,
+  requireStaff,
+  requireAppointmentAccess,
+  async (req, res) => {
 const { id } = req.params;
 
 try {
@@ -279,6 +372,8 @@ error: 'Failed to create online booking'
 }
 });
 
+// Protect all receptionist/internal appointment routes.
+router.use(authenticateToken, requireStaff);
 
 // ── POST /api/appointments ────────────────────────────────────────────────────
 // RECEPTIONIST BOOKING
@@ -295,7 +390,12 @@ error: 'Failed to create online booking'
 // Love2Smile at Reitz → Dentist 1 OR Dentist 2
 // Love2Smile Cullinan → Dentist 1
 
-router.post('/', async (req, res) => {
+router.post(
+  '/',
+  authenticateToken,
+  requireStaff,
+  requireAppointmentAccess,
+  async (req, res) => {
 
 const {
 patient_id,
@@ -306,11 +406,23 @@ duration_minutes = 60,
 status = 'pending',
 notes = null,
 
-branch,
+branch = req.user.role === 'RECEPTIONIST'
+  ? req.user.branch
+  : req.body.branch,
 dentist_slot = 1
 
 } = req.body;
 
+// Receptionists may only create appointments for their assigned surgery
+if (
+  req.user.role === 'RECEPTIONIST' &&
+  branch !== req.user.branch
+) {
+  return res.status(403).json({
+    success: false,
+    error: 'You can only create appointments for your assigned surgery.'
+  });
+}
 
 // ── Basic validation ───────────────────────────────────────────────────────
 
@@ -546,10 +658,31 @@ client.release();
 // Branch and dentist can also be changed here.
 // The database exclusion constraint protects against overlaps.
 
-router.put('/:id', async (req, res) => {
+router.put( '/:id', authenticateToken, requireStaff, requireAppointmentAccess, async (req, res) => {
 
 const { id } = req.params;
 
+// Receptionists can only update appointments belonging to their assigned surgery
+if (req.user.role === 'RECEPTIONIST') {
+  const appointmentCheck = await pool.query(
+    'SELECT branch FROM appointments WHERE id = $1',
+    [id]
+  );
+
+  if (appointmentCheck.rows.length === 0) {
+    return res.status(404).json({
+      success: false,
+      error: 'Appointment not found.'
+    });
+  }
+
+  if (appointmentCheck.rows[0].branch !== req.user.branch) {
+    return res.status(403).json({
+      success: false,
+      error: 'You can only update appointments for your assigned surgery.'
+    });
+  }
+}
 
 const {
 appointment_date,
@@ -609,6 +742,16 @@ branch !== undefined
 ? branch
 : existing.branch;
 
+// Receptionists cannot move an appointment to another surgery
+if (
+  req.user.role === 'RECEPTIONIST' &&
+  selectedBranch !== req.user.branch
+) {
+  return res.status(403).json({
+    success: false,
+    error: 'You can only keep appointments within your assigned surgery.'
+  });
+}
 
 const selectedDentist =
 dentist_slot !== undefined
@@ -904,7 +1047,12 @@ error:
 
 // ── DELETE /api/appointments/:id ──────────────────────────────────────────────
 
-router.delete('/:id', async (req, res) => {
+router.delete(
+  '/:id',
+  authenticateToken,
+  requireStaff,
+  requireAppointmentAccess,
+  async (req, res) => {
 
 const { id } = req.params;
 
