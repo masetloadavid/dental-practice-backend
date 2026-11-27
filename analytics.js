@@ -9,7 +9,7 @@ const { pool } = require('./db');
 const {
   authenticateToken,
   requireStaff
-} = require('../authMiddleware');
+} = require('./authMiddleware');
 
 // ── GET /api/analytics ────────────────────────────────────────────────────────
 
