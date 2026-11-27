@@ -162,4 +162,72 @@ router.post(
   }
 );
 
+// Activate or deactivate a receptionist account
+router.patch(
+'/:id/status',
+authenticateToken,
+requireManager,
+async (req, res) => {
+try {
+const userId = Number(req.params.id);
+const { is_active } = req.body;
+
+if (!Number.isInteger(userId) || userId <= 0) {
+return res.status(400).json({
+success: false,
+error: 'Invalid user ID.'
+});
+}
+
+if (typeof is_active !== 'boolean') {
+return res.status(400).json({
+success: false,
+error: 'is_active must be true or false.'
+});
+}
+
+// Prevent the manager from deactivating their own account
+if (
+!is_active &&
+Number(req.user.userId) === userId
+) {
+return res.status(400).json({
+success: false,
+error: 'You cannot deactivate your own account.'
+});
+}
+
+const result = await pool.query(
+`UPDATE users
+SET is_active = $1, updated_at = NOW()
+WHERE id = $2 AND role = 'RECEPTIONIST'
+RETURNING id, full_name, username, role, branch, is_active`,
+[is_active, userId]
+);
+
+if (result.rows.length === 0) {
+return res.status(404).json({
+success: false,
+error: 'Receptionist account not found.'
+});
+}
+
+return res.json({
+success: true,
+message: is_active
+? 'Receptionist account activated successfully.'
+: 'Receptionist account deactivated successfully.',
+user: result.rows[0]
+});
+} catch (error) {
+console.error('PATCH /api/users/:id/status error:', error);
+
+return res.status(500).json({
+success: false,
+error: 'Failed to update account status.'
+});
+}
+}
+);
+
 module.exports = router;
